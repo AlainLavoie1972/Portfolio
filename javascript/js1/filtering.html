@@ -1,0 +1,115 @@
+<!--
+Name:	Alain Lavoie		
+Date:	Lab Programming fundementals		
+Purpose:Simulate a product filtering app
+-->
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Filtering Products</title>
+	</head>
+	<body>
+		
+		<!-- Some Form -->
+		<fieldset>
+			<legend>Some Form to Fill</legend>
+			<form>
+                <!-- Filter-->
+				<p>
+                    Filter Products By:
+                    <select id="sbFilter" onchange="displayProducts()">
+                        <option selected>All</option>
+                        <option>Not Expired</option>
+                        <option>Expired</option>
+                    </select>
+                </p>
+
+                <!-- Products Output -->
+                <div id="productOutput">[Print Products here...]</div>
+			</form>
+		</fieldset>
+		
+        <!-- Javascript -->
+        <script>
+            // Product Constructor
+            function Product(name, price, exd)
+            {
+                this.name = name;           // string
+                this.price = price;         // float
+                this.expirationDate = exd;  // Date()
+            }
+
+            // TODO: Create Methods for the Product Object
+            var select = document.getElementById('sbFilter').value;
+            var out = document.getElementById('productOutput');
+
+            function isExpired(p){
+            	var dateNow = Date.now();
+            	var expired;
+            	
+            		var expDate = p.expirationDate;
+            		var answer = expDate.getTime() - dateNow;
+
+            		if(answer < 0){
+            			return false;
+            		}else{
+            			return true;
+            		}
+            	
+            }
+
+            function outputString(p){
+            	product = p;
+            	var isOrNot = isExpired(product);
+            	if(isOrNot == false){
+            		product.expired = "Not Expired"
+            	}else{
+            		product.expired = "Expired"
+            	}
+            	var productString = product.name + " | " + product.price + " | " + product.expirationDate + " | " + product.expired + "<br>";
+            	return productString;
+            }
+            // Global array
+            var products = [];
+
+            // Add some products to the products array
+            products.push( new Product( "2 litre Milk Carton",  4.99,       new Date("March 21, 2019") ) );
+            products.push( new Product( "Box of Cookies",       5.50,       new Date("August 13, 2019") ) );
+            products.push( new Product( "Bag of Apples",        7.99,       new Date("February 1, 2019") ) );
+            products.push( new Product( "Loaf of Bread",        5.99,       new Date("March 30, 2019") ) );
+            products.push( new Product( "Block of Cheese",      10.99,      new Date("March 14, 2019") ) );
+            products.push( new Product( "Cereal",               3.59,       new Date("March 15, 2020") ) );
+            products.push( new Product( "Pasta Noodles",        1.29,       new Date("August 25, 2022") ) );
+            products.push( new Product( "Potatoe Chips",         .99,       new Date("January 1, 2019") ) );
+            products.push( new Product( "Carrots",               .79,       new Date("March 30, 2019") ) );
+            products.push( new Product( "Celery",               1.29,       new Date("March 14, 2019") ) );
+           
+            if(select == "All"){
+                displayProducts();
+            }
+            // Debug Output for the array
+            console.info(products);
+
+            // TODO: Create function that displays the procuts in the array based on the filter selected
+            function displayProducts(){
+            	var filter = document.getElementById("sbFilter").value;				
+				var output = document.getElementById("productOutput");
+
+				output.innerHTML = "";
+
+				for(var i = 0; i < products.length; i++){
+					var exp = outputString(products[i]);
+					
+					if(products[i].expired === filter || filter == "All"){
+
+						output.innerHTML += exp ;
+					}
+					
+					
+            	}
+            }
+
+
+        </script>
+	</body>
+</html>

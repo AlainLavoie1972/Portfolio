@@ -1,0 +1,149 @@
+<!-- 
+	Name: Alain Lavoie
+	Date: March 2019
+	Purpose: Midterm
+-->
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Midterm W2019</title>
+		<h1 style="color: black; padding: 5px;">IWD Ticket Vendor</h1>
+	</head>
+	<body style="background-color: #a2c3f9; border: 2px solid black; padding: 5px;">
+		<div style="background-color: #849fcc; border: 2px solid black; padding: 5px; display: inline-block" >
+			<table>
+				<tr>
+					<td>
+						<!-- Slot 1 -->
+						<div style="background-color: white; border: 2px solid #3a302a; padding: 5px;" onmouseover="this.style.backgroundColor = '#fdff91';" onmouseout="this.style.backgroundColor = 'white';">
+							<h3>Avengers</h3>
+							<image src="avengers_poster.PNG" width="150" height="250" style="display: block; margin-left: auto; margin-right: auto;"/>
+							<br/>
+							<p><strong>Tickets Available:</strong>
+								<input readonly type="number" value="100" id="movie1SeatsAvailable" />
+							</p>
+							<p>
+								<input type="number" value="0" id="movie1ticketsToSell" />
+								<input type="button" value="Sell" onclick="sell(document.getElementById('movie1SeatsAvailable'),document.getElementById('movie1ticketsToSell'))" />
+								<input type="button" value="Add Seats" onclick="addSeats(document.getElementById('movie1ticketsToSell'),document.getElementById('movie1SeatsAvailable'))" />
+							</p>
+							
+						</div>
+					</td>
+					<td>
+						<!-- Slot 2 -->
+						<div style="background-color: white; border: 2px solid #3a302a; padding: 5px;" onmouseover="this.style.backgroundColor = '#fdff91';" onmouseout="this.style.backgroundColor = 'white';">
+							<h3>Lego Movie</h3>
+							<image src="lego_poster.PNG" width="150" height="250" style="display: block; margin-left: auto; margin-right: auto;"/>
+							<br/>							
+							<p><strong>Tickets Available:</strong>
+								<input readonly type="number" value="50" id="movie2SeatsAvailable" />
+							</p>
+							<p>
+								<input type="number" value="0" id="movie2ticketsToSell" />
+								<input type="button" value="Sell" onclick="sell(document.getElementById('movie2SeatsAvailable'),document.getElementById('movie2ticketsToSell'))" />
+								<input type="button" value="Add Seats" onclick="addSeats(document.getElementById('movie2ticketsToSell'),document.getElementById('movie2SeatsAvailable'))" />
+							</p>
+							
+						</div>	
+					</td>
+					<td>
+						<!-- Slot 3 -->
+						<div style="background-color: white; border: 2px solid #3a302a; padding: 5px;" onmouseover="this.style.backgroundColor = '#fdff91';" onmouseout="this.style.backgroundColor = 'white';">
+							<h3>Star Wars</h3>
+							<image src="starwars_poster.PNG" width="150" height="250" style="display: block; margin-left: auto; margin-right: auto;"/>
+							<br/>							
+							<p><strong>Tickets Available:</strong>
+								<input readonly type="number" value="77" id="movie3SeatsAvailable" />
+							</p>
+							<p>
+								<input type="number" value="0" id="movie3ticketsToSell" />
+								<input type="button" value="Sell" onclick="sell(document.getElementById('movie3SeatsAvailable'),document.getElementById('movie3ticketsToSell'))" />
+								<input type="button" value="Add Seats" onclick="addSeats(document.getElementById('movie3ticketsToSell'),document.getElementById('movie3SeatsAvailable'))" />
+							</p>					
+							
+						</div>	
+					</td>
+				</tr>
+			</table>
+			
+			<!-- Buttons -->
+			<input type="button" value="Reset All" style="padding: 10px;" onclick="resetAll();" />
+			<input type="button" value="Clear Ticket Sale History" style="padding: 10px;" onclick="clearHistory()" />
+			
+		</div>
+		
+		
+		<!-- Output Area -->
+		<p style="color: black; font-size: 20px; font-weight: bold; padding: 5px;">
+		Ticket Sale History: 
+		</p>
+		<div style="color: black; font-weight: bold; padding: 5px;" id="saleOutputArea">
+			
+		</div>
+		
+		
+		<script>
+			
+
+			function sell(el,sub,output){
+				var output = document.getElementById('saleOutputArea');
+				var ticks = parseInt(el.value);
+				var minus = parseInt(sub.value);
+				var total = ticks - minus;
+				if (minus > ticks){
+					alert("Not enough tickets available.");
+					el.value = ticks;
+					output.innerHTML += "Not enough tickets<br>"; 
+				}
+				else if (ticks <= 0 ){
+					alert("Sold out!");
+				}else{
+					el.value = total;
+				
+					if (el.id == "movie1SeatsAvailable"){
+						var name = "Avengers Movie";
+					}
+					if(el.id == "movie2SeatsAvailable"){
+						var name = "Lego Movie";
+					}
+					if(el.id == "movie3SeatsAvailable"){
+						var name = "Star Wars Movie";
+					}
+					output.innerHTML += name + " Sold: " + minus + ", Tickets Remaining: " + total + "<br>"; 
+				}
+			}
+			var sub;
+			var el;
+			function addSeats(el,add){
+				var output = document.getElementById('saleOutputArea');
+				var num = parseInt(el.value);
+				var plus = parseInt(add.value);
+				var total = num + plus;
+				add.value = total;
+				if (el.id == "movie1ticketsToSell"){
+					var name = "Avengers Movie";
+				}
+				if(el.id == "movie2ticketsToSell"){
+					var name = "Lego Movie";
+				}
+				if(el.id == "movie3ticketsToSell"){
+					var name = "Star Wars Movie";
+				}
+				output.innerHTML += name + ": "+ num + " Tickets added<br>"; 
+			}
+			function resetAll(el){
+				document.getElementById('movie1SeatsAvailable').value = 100;
+				document.getElementById('movie2SeatsAvailable').value = 50;
+				document.getElementById('movie3SeatsAvailable').value = 77;
+				document.getElementById('movie1ticketsToSell').value = 0;
+				document.getElementById('movie2ticketsToSell').value = 0;
+				document.getElementById('movie3ticketsToSell').value = 0;
+			}
+			function clearHistory(){
+				var output = document.getElementById('saleOutputArea');
+				output.innerHTML = "";
+			}
+		</script>
+	</body>
+</html>

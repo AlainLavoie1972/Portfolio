@@ -1,0 +1,440 @@
+<!--
+Name:	Alain Lavoie
+Date:	April 11 2019
+Purpose:To replicate a e-commerce shopping cart. 
+-->
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Project</title>
+	</head>
+	<body onload="timeString();">
+		<h1>Online Store</h1>
+		<span id="dateArea"></span>
+		<br>
+		<fieldset> <legend>Store Items</legend>
+			<select id="displayFilter" onchange="displayProducts()">
+				<option>All</option>
+				<option>ELECTRONICS</option>
+				<option>ACCESSORIES</option>
+				<option>EXHAUST PIPES</option>
+				<option>LUGGAGE</option>
+			</select>
+			<br/>
+			<span><strong>| ID | Product Name | Price | Qty | Max | Category |</strong></span>
+			<div id="inventoryOutput"></div>
+		</fieldset>
+		<br>
+		<fieldset> <legend>Select Items</legend>
+			<p>
+				Item ID: <input type="text" id="addItemId" onclick="clearValidation(this)" />
+				<span id="addIDValidationMessage">Validation Message Here...</span>
+			</p>
+			<p>
+				Qty: <input type="number" id="addItemQty" onclick="clearValidation(this)"/>
+				<span id="addQtyValidationMessage">Validation Message Here...</span>
+			</p>
+			<p>
+				<input type="button" value="Item Details" onclick="cartItems(this)" />
+				<input type="button" value="Add Item" onclick="cartItems(this)"/>
+				<input type="button" value="Remove Item" onclick="cartItems(this)"/>
+			</p>
+		</fieldset>
+		<br>
+		<fieldset> <legend>Your Cart</legend>
+			<span><strong>| ID | Price | Qty | Subtotal |</strong></span>
+			<br>
+			<div id="cartOutput"></div>
+			<br>
+			<div id="cartCheckout"></div>
+		</fieldset>
+		<br>
+		<fieldset> <legend>Review an Item</legend>
+			<p>Product ID: <input type="text" id="reviewId" onclick="clearValidation(this)" /></p>
+			<p>Review: <input type="text" id="reviewDesc" size="100"/></p>
+			<p><input type="button" value="Review" onclick="reviewItem();" /></p>
+		</fieldset>
+		
+        <!-- Javascript -->
+        <script>
+        	//The value of the store items ddl
+        	var filter = document.getElementById("displayFilter").value;
+        	//The elements for cart items to be displayed
+        	var out = document.getElementById('cartOutput');
+        	var chkout = document.getElementById('cartCheckout');
+        	var elAddItem = document.getElementById('addItemId');
+        	var elqtyWanted = document.getElementById('addItemQty');
+        	//Arrays for the date. This allows the date to be shown as (day of the week/ Month/ day of month)
+        	var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+        	var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+        	//Function to change the numeric values of the date object into a string date.
+        	function timeString(){
+        		
+        		var date = new Date();//new Date object
+        		var dateDisp = document.getElementById("dateArea");// Element to display the date to
+        		var day = date.getUTCDay();//Day of the week numeric
+        		var month = date.getUTCMonth();//Month numeric
+        		var numDate = date.getUTCDate();//Date of the month number
+        		for(var i = 0; i < days.length; i++){
+        			
+        			if(i == day){//if numeric value of day matches the i variable enter if statement
+        				var stringDay = days[i];//Get the matching String from the days array.
+        			}
+        		}
+        		for(var j = 0; j < months.length; j++){
+
+        			if(j == month){//if numeric value of month matches the j variable enter if statement
+        				var stringMon = months[j];//Get the matching String from the months array.
+        			}
+        		}
+
+        		var dateString = stringDay + " " + stringMon + " " + numDate;// Format the string for display
+        		dateDisp.innerHTML = dateString;//Add the string to the element.
+        	}//End timeString function
+
+ 			//Object StoreItems constructor
+			function StoreItems(id, name, price, qtOnHand, maxPerCust, cat, costShip, revs, desc){
+				this.id = id;
+				this.name = name;
+				this.price = price.toFixed(2);
+				this.quantityOnHand = qtOnHand;
+				this.maxPerCust = maxPerCust;
+				this.category = cat;
+				this.costToShip = costShip.toFixed(2);;
+				this.reviews = revs;
+				this.description = desc;
+			}
+			//Object CartItem constructor
+			function CartItem(id,price,qty){
+				this.id = id;
+				this.price = price;
+				this.qty = qty;
+			}
+
+			//Empty Array to hold store Items
+			var items = [];
+			//Empty array for cartItems
+			var itemsInCart = [];
+
+			//Items to populate the items array with objects StoreItems
+			items.push(new StoreItems("12-913959", "WASPcam Wall Charger", 11.99, 10, 2, "ACCESSORIES", 0.00, 
+				["Light, durable, and fitted with a powerful 12-watt dual USB charging system", "It is reliable, has LED indicator lights that reflect its status, and has a sophisticated circuit design with several safety features ", "This is the best one reviewed so far by people so let us see what the pros and cons "]
+				, "Wall Charger- connectis with USB cable"));
+			items.push(new StoreItems("12-210046", "Cardo Systems Freecom 1 FM Headset", 119.88, 5, 2, "ELECTRONICS", 3.50, 
+				[" Mindframe microphone also has issues of its own. Pushing it back into the “mute” position, you’ll hear an audible beep while wearing the headphones", "Stronger alternatives (that lack the cooling feature) exist for less than half the price from HP’s competitors", "allow toggling of the 7.1 sound, and improve the headset’s sonic performance","being able to keep my ears cool during long gaming sessions is right up there"]
+				, "The Cardo Freecom 1 is a plug and play Bluetooth communication system for the solo rider."));
+			items.push(new StoreItems("17213", "Shortshots Staggered Exhaust Chrome", 449.99, 30, 4, "EXHAUST PIPES", 50.46, 
+				["Great pipes ease to put on about 1 hr good guilty","Great sounding exhaust. The instructions where not very detailed for the installation, but I was able to install everything without any issues. Highly recommend this product","i put these on about a month ago, and now im looking for new pipes. they look alright,they sound like garbage.i bought these based on reviews. if your thinking about buying these pipes look at other options","easy install just remember lock tight"]
+				, "Vance & Hines delivers classic looks, style and performance with these Shortshots Staggered Chrome Exhaust Pipes"));
+			items.push(new StoreItems("17911", "Big Shots Staggered Exhaust Chrome", 659.99, 6, 1, "EXHAUST PIPES", 50.46, 
+				["Amazing pipes, great sound. With a little tuning I was down the road.","Fit perfect and Sound Great!!!","Love these pipes!!!!","The neighbors definitely know when I fire up my ride. Definitely worth it.","I have invested a lot of money in making my dream machine.I also enjoy a little talk with the SERVICE TECS so i do not have a lot of problems with installation problems."]
+				, "1-3/4″ headpipes, 2-1/8 muffler bodies with heat shields installed, Includes 2-1/2 full coverage heat shields, Billet end caps, Removable baffles"));
+			items.push(new StoreItems("50311", "Ciro Smartphone/GPS Holder with Black Perch Mount", 64.99, 58, 10, "ACCESSORIES", 27.20, "No reviews", " Ciro Smartphone Holder is designed to be quick and simple, just flip the lever to lock your smartphone into the secure rubber molded fingers."));
+			items.push(new StoreItems("GP-GRX2B", "Grip Switch Dual Garage Door Opener Kit, Black", 147.99, 0, 0, "ELECTRONICS", 10.25, 
+				"No reviews"
+				, "Dual momentary rocker switch allows you to open two separate garage doors with one kit"));
+			items.push(new StoreItems("1483", "Kuryakyn Electrical Power Point", 73.79, 67, 10, "ELECTRONICS", 12.76, 
+				["Great product!!","For installation on handlebars, requires come modification to install anywhere else."]
+				, "Perfect for plugging in your cell phone, iPod, GPS, air pump,or any other electrical device taken on the road"));
+			items.push(new StoreItems("0636-0053", "Klock Werks Chrome Riser Clamp Device Mount", 179.95, 169, 8, "ACCESSORIES", 29.39, 
+				"Not yet rated. Be the first to Write a Review."
+				, "A new and unique design from Klock Werks to mount your device to your bike"));
+			items.push(new StoreItems("RPABT2IA", "RidePower 2.0 Cell Phone/Electronic Device Charging Cable Kit, 6ft", 39.99, 58, 2, "ELECTRONICS", 27.20, 
+				["Must have on long trips or commutes home after work, saved me from having to charge my phone when I got home.","A must for a softail to keep phone charged while riding. Good quality part.","Got mine a few days ago but just installed it today and man I love it! Keeps my phone powered all the time and I can use it for my Bluetooth speaker! Easy to install and definitely worth the money."]
+				, "Compatible with Android (Micro USB) and includes a custom adapter for iPhone's Lightning connection"));
+			items.push(new StoreItems("MR508UABS", "Boss Audio Systems Single-DIN 50 Watt CD Player, Silver", 106.99, 23, 1, "ELECTRONICS", 35.95, 
+				["I ordered a product for my husband's Christmas. Unfortunately it was the wrong model, but J&P sent the correct one in a few days. Thanks!"]
+				, "Weatherproof 50 Watts x 4 max power, balance/fader/bass/treble and preset built-in EQ"));
+			items.push(new StoreItems("MCBK420B", "Boss Audio Systems 600 WattBluetooth 3″ Black Speaker Kit", 109.99, 15, 4, "ELECTRONICS", 38.22, 
+				["This speaker set was actually pretty impressive over the sound of a vance n hines competition series exhaust on a big twin HD! Fairly simple to install.","Only thing of note is both my speakers blew out after maybe 100 miles of max volume, id say more of my fault on that end.","Sound is incredibly loud with a helmet on while on the highway! ","be sure to tighten the nuts directly under your speakers or the metal WILL break.my RS snaped"]
+				, "Pair of black weather proof 3″ 600 Watt full range speakers"));
+			items.push(new StoreItems("8400062", "Saddlebag Support Brackets", 39.99, 95, 4, "LUGGAGE", 31.58, 
+				["Everything fit good. I really like the bags that I bought in the store in Anamosa","Fits perfect!!","Exactly as advertised!","Ordered for my 94 fatboy. Fit perfectly as advertised. Would have preferred replacement bolts to be button head","Will not work if you have a detachable backrest. the spacer for the backrest is one bolt used for the racket, the other is not, so it's just not compatible"]
+				, "Holds throw-over saddlebags away from the brake caliper and swingarm"));
+			items.push(new StoreItems("35010232", "Saddlemen Drifter S4 Rigid-Mount Quick-Detach Slant Saddlebags for H-D Motorcycles", 451.80, 1, 1, "LUGGAGE", 68.31, 
+				["They don't seem to be available without the turn signal relocation kit, and I had already done that job with a Kuryakin kit, so the extra cost for those bits was a waste.","Just what I needed for my bike (07 dyna), it elevates the back 1.5 inches from stock which makes my big wheel conversion fit nicely","Awesome bags and easy to mount. The relocation kit is kinda cheesy. Looks great."]
+				, "A truly portable luggage system, with handles included"));
+			items.push(new StoreItems("CV-12", "CycleVisions BareBacks Quick Detach Saddlebag Mounting Kit for OEM Sissy Bar", 149.95, 47, 6, "LUGGAGE", 27.20, 
+				["The fit is too tight, I always have to use a wrench to re-align the parts. A real disaster!","Easy to install and holds bags securely. Was a good choice for me","Nice product. Fairly clean, even with detachable sissy bar hardware.","Easy install. When new, they can be a little sticky when installing/uninstalling bags."]
+				, "The easy way to remove both your saddlebags and the steel mounting bracket"));
+			items.push(new StoreItems("3501-0340", "Saddlemen S4 Docking Posts and Fasteners Kit", 101.70, 21, 4, "LUGGAGE", 31.58, 
+				["Would not fit my 2011Harley Softail without major modifications.","This system is great! I combined it with the Saddlemen support brackets on a 93 Sporty and went with Viking Lockable Bags","Looks to be well made. Easy to install and use."," Easy on and off with saddlebags as long as you don't mind having to cut two one inch holes in each back side of your saddlebags","Worked great, Was easier than installing bags without this part."]
+				, "Designed to attach/detach all Saddlemen saddlebags and any rigid-back aftermarket and OEM saddlebags"));
+
+			//Function to output the product string
+			function outputString(p){
+            	item = p;//p represents the item
+            	//Format the productString to output the desired values 
+            	var productString = item.id + " | " + item.name + " | " + item.price + " | " + item.quantityOnHand + " | " + item.maxPerCust +  " | " + item.category +"<br>";
+            	return productString;
+            }//end outputString function
+
+			//function to display items. if the items ddl is changed
+			function displayProducts(){
+            	var filter = document.getElementById("displayFilter").value;// get the value of the selected ddl item				
+				var output = document.getElementById("inventoryOutput");//Get the element to display the items
+
+				output.innerHTML = "";//Clear the element of previous values
+
+				for(var i = 0; i < items.length; i++){//Loop the items array of StoreItems objects
+					if(items[i].category === filter || filter == "All"){//if StoreItems.category value matches filter enter if statement 
+						var exp = outputString(items[i]);// sent the item to outputString function to be formatted.
+						output.innerHTML += exp ;//populate the element with the items matching the category selected 
+					}
+            	}
+            }//end of displayProducts function
+
+            //Call the function on page load.
+        	displayProducts();
+        	displayCartItems();
+        	
+        	//Check if the cart is empty
+        	if(itemsInCart.length == 0){
+        		out.innerHTML = "No items in your cart"//message display for empty cart
+        	}
+
+        	//Helper function for displayCartItems(), it also is used for add to cart and remove from cart
+        	function cartItems(el){
+        		
+        		var btn = el.value;//get the button value
+        		
+        		var itemId = elAddItem.value;// the id wanted
+        		
+        		var qtyWanted = parseInt(elqtyWanted.value);//Qty wanted changed from string to int
+
+        		var valid = validateItem(itemId,qtyWanted);//Boolean to check if the values of the textboxes are valid
+
+        		if(valid == true){//if valid
+	        		for(var i = 0; i < items.length; i++){//loop through the items array to get the item
+
+							var product = items[i];//The item currently in the loop
+
+						if(product.id === itemId){// if the item currently in the loop matches the validated user input id
+							var item = items[i];//Get the item
+						}
+	        		}
+        		}
+
+        		var revFormat = "";//Empty variable for the alert string for the details btn
+        		for(var i = 0; i < item.reviews.length; i++){
+        			revFormat += item.reviews[i] + "\n\n";
+        		}
+				var formatString = "Item Details\n"+ "Id: "+ item.id + "\n" +item.name + "\nPrice per $" + item.price + "\nIn Stock: " + item.quantityOnHand + "\n" + item.maxPerCust + " Allowed per customer\nShipping Cost: $" + item.costToShip + "\n-------Description------\n" + item.description + "\n-------Reviews------\n" + revFormat;
+        		//end format string
+
+        		switch(btn){//Switch on the value of btn clicked
+        			case "Item Details"://if item details display the format string in the alert()
+        				alert(formatString);
+        				break;
+        			case "Add Item":// If add to cart begin the process				
+        					var load = true;// Boolean to check if the item is already in the cart
+        					for(var j = 0; j < itemsInCart.length; j++){//Loop through the cart array
+        						var newItemInCart = item.id;//The value of the user input
+        						var chkItems = itemsInCart[j];//current item from the cart in the loop
+        						if(chkItems.id == newItemInCart){//if item id's match
+        							itemsInCart[j].qty += 1;//add 1 to the cart item already in the cart
+        							var addOne = itemsInCart[j];//get the cart item to recalculate the subtotal
+        							load = false//The item wanted is already in the cart so load is false
+        						}
+        						
+        					}
+        					if(load == false){//if load is false
+        						cartOutput(addOne);//Instead of adding it to the array, send it to the output function to be recalculated
+        					}else{//If load is true, item is new to the cart
+        						itemsInCart.push(new CartItem(item.id, item.price, qtyWanted));//add it to the cart array
+
+        					}
+        					displayCartItems();//display the cart items
+        					
+        				break;
+        			case "Remove Item"://If remove Item
+
+        					for(var k = 0; k < itemsInCart.length; k++){//Loop through items
+
+        						var curItem = itemsInCart[k];//Current item in the loop
+
+        						if(curItem.id == itemId){//if the item in the loops id matches the id from the textBox
+        							itemsInCart.splice(k, 1);//remove it from the array of cartItems
+        						}
+        					}
+        					displayCartItems();//Display ItemsInCart
+        					
+        				break;
+        			default:
+
+        				break;
+        			}
+        	}
+        	
+        	//Function to validate the item requested for the cart
+        	function validateItem(id,qty){
+        		var validateQty = document.getElementById('addQtyValidationMessage');//Validation area
+        		var validateId = document.getElementById('addIDValidationMessage');//Validation area
+        		var itemId = id;//The item id
+        		var qtyWanted = qty;//The qty wanted
+        		var valid = true;//Boolean to be returned
+        		for(var i = 0; i < items.length; i++){//Loop throughh the items to find the matching id
+
+        			var currentItem = items[i];
+        			var currentId = currentItem.id;
+        			if(itemId === currentId){
+
+        				var item = currentItem;
+        			}
+        		}//end for loop
+        		if(item != null){//If the itemid from textbox is an item that matches
+        			valid = true;//Valid == true
+        			
+        		}else{// If no items match send the validation message and style to the Validation area
+        			validateId.innerHTML = "Sorry no products match ID # " + itemId;
+			        validateId.style.color = "red";
+			        elAddItem.style.border = "2px solid red";
+			        elAddItem.style.background = "lightpink";
+        			valid = false;
+        			
+        		}//end item validation
+
+        		if(valid == true){//If valid is true proceed to check the amount wanted against the max per cust
+
+        			var perCust = item.maxPerCust;
+
+        			if(qtyWanted > perCust){// If amount wanted is more than the max allowed send validation to Validation area
+
+        				validateQty.innerHTML = "Sorry only " + item.maxPerCust + " per customer!";
+			            validateQty.style.color = "orange";
+			            elqtyWanted.style.border = "2px solid orange";
+			            elqtyWanted.style.background = "lightorange";
+			            valid = false;
+			            return valid;
+
+        			}else{
+
+        				valid = true;
+        				return valid;
+        			}//end amount validation
+        		}
+        	}//end validation function
+
+        	//Funtion to display cart items
+        	function displayCartItems(){
+        		
+        		out.innerHTML = "";//Clear display areas
+        	
+        		for(var i = 0; i < itemsInCart.length; i++){//Loop through the array of CartItem objects
+        			//var calc = cartChkOut(itemsInCart[i]);//send the items to be tallied
+        			var cart = cartOutput(itemsInCart[i]);//Send the item to be formatted for display
+        			out.innerHTML += cart;//Display the formatted string in the output area
+        		}
+        		cartChkOut(itemsInCart);//Call the cartChkOut function to tally the cartItems;
+        	}//end displaycart funtion
+
+        	//Function to format the output for the cart area
+        	function cartOutput(p){//Accepts the current cart item in the loop
+        		var subtotal = calcSubtotal(p)//Send the item to be subtotaled
+        		var cartOutputString = p.id + " | " + p.price + " | " + p.qty + " | " + subtotal + "<br>";//Output string
+        		return cartOutputString;
+        	}//end cartOuput string function
+
+        	//Function to calculate the subtotal
+        	function calcSubtotal(p){//Accepts the current item in the display function
+        		var pr = p.price;//The item price
+        		var qt = p.qty;//the qty wanted for purchase
+        		var sub = pr * qt;//Multiply for the subtotal
+        		return sub.toFixed(2);//Return the subtotal formatted to 2 decimals.
+        	}//end subtotal function
+
+        	//Function CartChkOut used to tally and display the cart information
+        	function cartChkOut(p){//Accepts itemsInCart
+        		//Variables for calculations
+        		var itemsSubTotal = estimatedShipping = subtotal = estimatedTax = finalTotal = count = theQty = 0;
+        		//Vars for the current cart item
+        		var theItem, theId;
+        		//Vars for the current Item
+        		var itemComp, itemCompId;
+        		//Vars for the price, costToShip and totlal of the item
+        		var itemCompPr = itemCompSh = itemCompTot = 0; 
+
+        		for(var j = 0; j < itemsInCart.length; j++){//Loop through the cartItems
+        			theItem = itemsInCart[j];//Current cartItem
+        			theId = theItem.id;//Current cartItemId
+        			theQty = theItem.qty;//Current qty wanted of the item
+        			for(var i = 0; i < items.length; i++){//Loop through the items
+        				itemComp = items[i];//Current item
+        				itemCompId = itemComp.id;//Current itemId
+        				if(itemCompId === theId){//If itemId matches the cartItemId
+        					itemCompPr = parseFloat(itemComp.price);//Get the price of the item
+        					itemCompSh = parseFloat(itemComp.costToShip);//Get the costToShip
+        					itemCompTot = itemCompPr * theQty;//Price times qty
+        				}
+        			}
+        			
+        			itemsSubTotal += itemCompTot;//Add total of price and qty to the subtotal for all itemsInCart
+        			estimatedShipping += itemCompSh;//Add total of shipping to shipping cost of all itemsInCart
+
+        		}
+        		subtotal = itemsSubTotal + estimatedShipping;//Subtotal of all the itemsInCart + Shipping
+        		estimatedTax = subtotal * 0.13;//Calculate tax
+        		finalTotal = subtotal + estimatedTax;// Grand total
+
+        		//Output string for the checkOut
+        		var formattedChkOut = "Items Subtotal: $" + itemsSubTotal.toFixed(2) + "<br>Estimated Shipping: $" + estimatedShipping.toFixed(2) + "<br><br>Subtotal: $" + subtotal.toFixed(2) + "<br>Estimated Tax: $" + estimatedTax.toFixed(2) + "<br>Order Total: $" + finalTotal.toFixed(2);
+        		cartCheckout.innerHTML = formattedChkOut;
+        	}//End cartChkOut function
+
+        	//reviewItem function
+        	function reviewItem(){
+        		var el = document.getElementById('reviewId');//Element to get the item being reviwed
+        		var elId = el.value;//The id of the item being reviwed
+        		var desc = document.getElementById('reviewDesc')//Element of the reviwe
+        		var descRev = desc.value;//The review of the item
+        		var match = false;//Boolean set to false
+        		for(var i = 0; i < items.length; i++){//Validate the id by checking for a match in the items array
+        			var item = items[i];
+        			var itemId = item.id;
+        			if(elId === itemId){//If the id from the text box matches
+        				match = true;//Bool = true
+        				var reviews = item.reviews;//get the reviews property from the StoreItems object
+        				reviews.push(descRev);//add it to the array of reviews
+        			}
+        		}
+        		if(match == false){//If no matches output validation mesage
+        			el.style.border = "2px solid Red";
+        			desc.value = "Sorry No Products match item #" + elId;
+        			desc.style.color = "Red";
+        		}
+        	}//End reviewItem function
+
+        	//Function to clear validation messages once the user clicks back into whichever element the error was from
+        	function clearValidation(el){
+        		//Elements for validation output
+        		var desc = document.getElementById('reviewDesc');
+        		var el = document.getElementById('reviewId');
+        		var validateQty = document.getElementById('addQtyValidationMessage');
+        		var validateId = document.getElementById('addIDValidationMessage');
+
+        		//Check to see which element had the error and clear the validation msgs and styles
+        		if(el.id === "addItemId"){
+        			validateId.innerHTML = "";			        
+			        elAddItem.style.border = "";
+			        elAddItem.style.background = "";
+			    }else if(el.id === "addItemQty"){
+			        validateQty.innerHTML = "";			        
+			        elqtyWanted.style.border = "";
+			        elqtyWanted.style.background = "";
+				}else{
+					el.style.border = "";
+					desc.value = "";
+					desc.style.color = "";
+				}
+        	}//End clearValidation function
+
+		</script>
+	</body>
+</html> 
+
+
+
+
+
+
