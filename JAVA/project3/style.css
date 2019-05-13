@@ -1,0 +1,26 @@
+.root{
+	-fx-background-color:#8EFFFF;
+	-fx-padding-left: 15px;
+	-fx-padding-right: 15px;
+}
+
+#label{
+	-fx-font-size: 14px;
+	-fx-font-weight: bold;
+	-fx-font-family: "Arial";
+	-fx-text-fill: #41ad16;
+}
+
+#txtBox{
+	-fx-font-size: 14px;
+	-fx-font-weight: bold;
+	-fx-font-family: "Arial";
+}
+
+#btn{
+	-fx-font-size: 14px;
+	-fx-font-weight: bold;
+	-fx-font-family: "Arial";
+	-fx-text-fill:#ffffff;
+	-fx-background-color:#41ad16;
+}
