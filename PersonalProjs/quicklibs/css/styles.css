@@ -1,0 +1,124 @@
+html{width: 100%; height: auto;}
+body{width: 100%; height: 100%; background-color:#000000; font-size: 100%;}
+
+header{
+	text-align: center;
+	font-family: 'Faster One', cursive;
+	font-size: 3vw;
+}
+
+form{
+	outline-color: #E18B00;
+	width: 60vw;
+	margin: 5% auto;
+	text-align: center;
+}
+
+.form-div{
+	color:  #E18B00;
+	font-variant: small-caps;
+	font-size: 1.5vw;
+}
+
+label{
+	margin-right: 1%;
+	margin-bottom: 2%;
+}
+
+input[type=text]{
+	height: 3vh;
+	width: 25vh;
+	margin-bottom: 1.5vh;
+	border:3px solid #E18B00;
+	border-radius: 5px;
+}
+
+input[type=text]:focus {
+  border: 3px solid #FFE51E;
+}
+
+input[type=submit]{
+	height: 3vh;
+	width: 15vw;
+	border:3px solid #E18B00;
+	border-radius: 5px;
+	background-color: #636363;
+	color:#E18B00;
+	letter-spacing: .3vw;
+	font-size: 1vw;
+	font-weight: bolder;
+}
+
+.button{
+	height: 3vh;
+	width: auto;
+	border:3px solid #E18B00;
+	border-radius: 5px;
+	background-color: #636363;
+	color:#E18B00;
+	letter-spacing: .3vw;
+	font-size: 1vw;
+	font-weight: bolder;
+}
+
+.center{
+	position: absolute;
+	left: 45%;
+	top: 50%;
+}
+
+.instr{
+	text-align: center;
+	color: #d08009;
+}
+
+.live{
+	color: #000;
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(to right,#D2691E, #D08D00, #D0AB00, #E1C800, #D0AB00, #D08D00, #D2691E);
+
+	-webkit-background-clip: text;
+	background-clip: text;
+
+	-webkit-text-fill-color: transparent;
+	text-fill-color:transparent;
+
+	-webkit-animation-name: Gradient; 
+	-webkit-animation-duration:5s ;
+	-webkit-animation-iteration-count: infinite;
+
+	-moz-animation-name: Gradient;
+	-moz-animation-duration: 5s ;
+	-moz-animation-iteration-count: infinite;
+
+	animation-name: Gradient; 
+	animation-duration: 5s ;
+	animation-iteration-count: infinite;
+
+	-webkit-animation-timing-function: ease-in-out;
+	-moz-animation-timing-function: ease-in-out;
+	 animation-timing-function:  ease-in-out;
+}
+
+@-webkit-keyframes Gradient{
+	0%{ background-position: 0 800px; }
+	
+	100%{background-position: 2000px 0; }
+}
+@-moz-keyframes Gradient{
+	0%{ background-position: 0 800px; }
+	
+	100%{background-position: 2000px 0; }
+}
+@keyframes Gradient{
+	0%{ background-position: 0 800px; }
+	
+	100%{background-position: 2000px 0; }
+}
+
+.lines{
+	color: #E18B00;
+	font-size: larger;
+	font-weight: 900;
+}
